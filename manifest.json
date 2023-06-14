@@ -1,0 +1,13 @@
+{
+    "manifest_version": 3,
+    "name": "To do list",
+    "version": "1.0",
+    "description": "aplicación que te permite gestionar tus tareas de forma eficiente y organizada desde tu navegador.",
+    "icons": {
+      "128": "images/nota.png"
+    },
+    "action": {
+      "default_popup": "popup/popup.html",
+      "default_icon": "images/nota.png"
+    }
+  }
