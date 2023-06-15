@@ -6,6 +6,9 @@
     "icons": {
       "128": "images/nota.png"
     },
+    "permissions": [
+      "storage"
+    ],
     "action": {
       "default_popup": "popup/popup.html",
       "default_icon": "images/nota.png"
