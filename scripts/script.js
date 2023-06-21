@@ -3,12 +3,20 @@ let organize_b = document.getElementById("button-organize");
 let first_view = document.getElementById("view-one");
 let second_view = document.getElementById("view-two");
 
-console.log('ssssss');
+function assignView(view) {
+    console.log(view.classList.value);
+    if (view.classList.value === "content-1") {
+        first_view.style.display = 'flex';
+        second_view.style.display = 'none';
+    } else if (view.classList.value === "content-1-grid") {
+        first_view.style.display = 'grid';
+        second_view.style.display = 'none';
+    }
+}
 
 create_b.addEventListener("click", () => {    
     if (getComputedStyle(first_view).getPropertyValue("display") == 'none') {
-        first_view.style.display = 'flex';
-        second_view.style.display = 'none';
+        assignView(first_view);
     }
 });
 
