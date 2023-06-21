@@ -13,9 +13,11 @@ function createNote() {
     content.style.display = 'grid';
     divTop.classList.add('note-top');
     divC.classList.add('note-content');
-    buttonSave.classList.add('button-top');
+    buttonSave.classList.add('img');
+    buttonSave.classList.add('save');
     buttonSave.id = 'save-button';
-    buttonConfig.classList.add('button-top');
+    buttonConfig.classList.add('img');
+    buttonConfig.classList.add('config');
     buttonConfig.id = 'conf-button';
     
     divTop.appendChild(buttonSave);

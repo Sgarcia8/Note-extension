@@ -26,11 +26,11 @@ body {
     height: 20px;
 }
 
-.sidebar li div.img {
+div.img {
     display: inline-block;
     width: 20px;
     height: 20px;
-    background-size: cover;
+    background-size: cover !important;
     text-indent: -9999px;
     cursor: pointer;
 }
@@ -46,7 +46,17 @@ div.img.organize {
 div.img.personalize {
     background: url('../images/paleta.png') no-repeat center center;
 }
-  
+ 
+div.img.save {
+    margin: 0 15px;
+    background: url('../images/guardar.png') no-repeat center center;
+}
+
+div.img.config {
+    margin: 0 15px;
+    background: url('../images/configuraciones.png') no-repeat center center;
+}
+
 .content-1 {
     display: flex;
     justify-content: center;
