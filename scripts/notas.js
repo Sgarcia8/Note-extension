@@ -1,12 +1,20 @@
+import Note from "./note.js";
+
 let createB = document.getElementById("principal-b");
 let content = document.getElementById('view-one');
+
+function initNote() {
+    let note = new Note();
+    console.log(Note.count);
+}
 
 function createNote() {
     let divTop = document.createElement('div');
     let divC = document.createElement('div');
     let textarea = document.createElement('textarea');
     let buttonSave = document.createElement('div');
-    let buttonConfig = document.createElement('div');
+    let tab = document.createElement('div');
+    let pTitle = document.createElement('p');
 
     content.classList.remove('content-1');
     content.classList.add('content-1-grid');
@@ -14,15 +22,16 @@ function createNote() {
     divTop.classList.add('note-top');
     divC.classList.add('note-content');
     textarea.id = 'note-textarea';
+    tab.classList.add('tab');
+    pTitle.classList.add('p-title');
+    pTitle.textContent = "N";
     buttonSave.classList.add('img');
     buttonSave.classList.add('save');
     buttonSave.id = 'save-button';
-    buttonConfig.classList.add('img');
-    buttonConfig.classList.add('config');
-    buttonConfig.id = 'conf-button';
     
-    divTop.appendChild(buttonSave);
-    divTop.appendChild(buttonConfig);
+    tab.appendChild(pTitle);
+    divTop.appendChild(tab);
+    divC.appendChild(buttonSave);
     divC.appendChild(textarea);
     content.appendChild(divTop);
     content.appendChild(divC);
@@ -48,17 +57,11 @@ createB.addEventListener("click", () => {
     createNote();
 
     let saveB = document.getElementById('save-button');
-    let confB = document.getElementById('conf-button');
 
     if (saveB) {
         saveB.addEventListener("click", () => {
-            saveNote();
-        });
-    }
-
-    if (confB) {
-        confB.addEventListener("click", () => {
-            getNote();
+            //saveNote();
+            initNote();
         });
     }
 });

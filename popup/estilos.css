@@ -90,7 +90,7 @@ div.img.config {
 }
 
 .content-2-notes {
-    display: flex;
+    display: none;
     width: 100%;
 }
 
@@ -114,13 +114,14 @@ div.img.config {
     background-color: #bf8315;
     height: 100%;
     display: flex;
-    align-items: center;
+    align-items: end;
     justify-content: space-between;
 }
 
 .note-content {
     grid-row: 2 / 3;
     height: 98%;
+    position: relative;
 }
 
 .note-content textarea {
@@ -150,4 +151,38 @@ div.img.config {
     grid-template-rows: 12% 88%;
     align-items: center;
     width: 100%;
+}
+
+.tab {
+    background-color: #ecb755;
+    width: 17%;
+    height: 70%;
+    cursor: pointer;
+    border-radius: 5px 14px 0 0;
+    transition: background-color 1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+  
+.tab:hover {
+    background-color: khaki;
+}
+
+#save-button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 10px;
+    background-color: #F2A71B;
+    background-size: 70% !important;
+}
+
+.p-title {
+    margin: 0;
+    font-weight: bold;
+    cursor: auto;
 }

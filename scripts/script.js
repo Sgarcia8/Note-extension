@@ -5,7 +5,6 @@ let second_view = document.getElementById("view-two");
 let numNotes = 0;
 
 function assignView(view) {
-    console.log(view.classList.value);
     if (view.classList.value === "content-1") {
         first_view.style.display = 'flex';
         second_view.style.display = 'none';
@@ -29,7 +28,6 @@ function createList(object) {
             div.appendChild(h1);
             item.appendChild(div);
             ul.appendChild(item);
-            //console.log(key, object[key]);
         }
     }
 
@@ -63,5 +61,6 @@ organize_b.addEventListener("click", () => {
         second_view.style.display = 'flex';
         first_view.style.display = 'none';
     }
-    loadSecondView();
 });
+
+loadSecondView();
