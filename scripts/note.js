@@ -4,12 +4,16 @@ class Note{
 
     constructor(){
         Note.count ++;
-        this.title = "note"+Note.count
-        this.content = ""
+        this._title = "note"+Note.count
+        this._content = ""
     }
 
     get title(){
-        return this.title;
+        return this._title;
+    }
+
+    get content(){
+        return this._content;
     }
 
     save(note) {

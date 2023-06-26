@@ -5,36 +5,49 @@ let content = document.getElementById('view-one');
 
 function initNote() {
     let note = new Note();
-    console.log(Note.count);
 }
 
-function createNote() {
+function createTopNote(note) {
     let divTop = document.createElement('div');
-    let divC = document.createElement('div');
-    let textarea = document.createElement('textarea');
-    let buttonSave = document.createElement('div');
     let tab = document.createElement('div');
     let pTitle = document.createElement('p');
+    let newTab = document.createElement('div');
+    let p = document.createElement('p');
 
+    divTop.classList.add('note-top');
+    tab.classList.add('tab');
+    pTitle.textContent = "N " + note.title.charAt(note.title.length - 1);
+    newTab.classList.add('new-tab');
+    newTab.id = 'add-tab';
+    p.textContent = "+";
+    
+    tab.appendChild(pTitle);
+    newTab.appendChild(p);
+    divTop.appendChild(tab);
+    divTop.appendChild(newTab);
+    content.appendChild(divTop);    
+}
+
+function creatContNote(note) {
+    let divC = document.createElement('div');
+    let textarea = document.createElement('textarea');
+
+    divC.classList.add('note-content');
+    textarea.id = 'note-textarea';
+    textarea.value = note.content;
+
+    
+    divC.appendChild(textarea);
+    content.appendChild(divC);
+}
+
+function createNote(note) {
     content.classList.remove('content-1');
     content.classList.add('content-1-grid');
     content.style.display = 'grid';
-    divTop.classList.add('note-top');
-    divC.classList.add('note-content');
-    textarea.id = 'note-textarea';
-    tab.classList.add('tab');
-    pTitle.classList.add('p-title');
-    pTitle.textContent = "N";
-    buttonSave.classList.add('img');
-    buttonSave.classList.add('save');
-    buttonSave.id = 'save-button';
     
-    tab.appendChild(pTitle);
-    divTop.appendChild(tab);
-    divC.appendChild(buttonSave);
-    divC.appendChild(textarea);
-    content.appendChild(divTop);
-    content.appendChild(divC);
+    createTopNote(note);
+    creatContNote(note);
 }
 
 function saveNote() {
@@ -52,16 +65,31 @@ function getNote() {
     });
 }
 
+function createNewTab() {
+
+    let existingTabs = document.getElementsByClassName("tab");
+    let lastTab = existingTabs[existingTabs.length - 1];
+    let note = new Note();
+
+    let newTab = document.createElement('div');
+    let p = document.createElement('p');
+    newTab.classList.add('tab');
+    p.textContent = "N " + note.title.charAt(note.title.length - 1);
+
+    newTab.appendChild(p);
+    lastTab.parentNode.insertBefore(newTab, lastTab.nextSibling);
+}
+
 createB.addEventListener("click", () => {
     createB.style.display = "none";
-    createNote();
+    let note = new Note();
+    createNote(note);
 
-    let saveB = document.getElementById('save-button');
+    let addTabB = document.getElementById('add-tab');
 
-    if (saveB) {
-        saveB.addEventListener("click", () => {
-            //saveNote();
-            initNote();
+    if (addTabB) {
+        addTabB.addEventListener("click", () => {
+            createNewTab();
         });
     }
 });

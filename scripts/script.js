@@ -38,7 +38,7 @@ function createList(object) {
 
 function loadSecondView() {
     chrome.storage.local.get(null, (result) => {
-        if (result) {
+        if (result.valueOf.length != 0) {
             createList(result);
         } else {
             second_view.classList.add('content-2');
@@ -63,4 +63,5 @@ organize_b.addEventListener("click", () => {
     }
 });
 
+chrome.storage.local.clear();
 loadSecondView();
