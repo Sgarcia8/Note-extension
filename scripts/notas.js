@@ -3,10 +3,6 @@ import Note from "./note.js";
 let createB = document.getElementById("principal-b");
 let content = document.getElementById('view-one');
 
-function initNote() {
-    let note = new Note();
-}
-
 function createTopNote(note) {
     let divTop = document.createElement('div');
     let tab = document.createElement('div');
@@ -16,7 +12,8 @@ function createTopNote(note) {
 
     divTop.classList.add('note-top');
     tab.classList.add('tab');
-    pTitle.textContent = "N " + note.title.charAt(note.title.length - 1);
+    pTitle.textContent = note.title;
+    pTitle.id = note.id;
     newTab.classList.add('new-tab');
     newTab.id = 'add-tab';
     p.textContent = "+";
@@ -26,6 +23,8 @@ function createTopNote(note) {
     divTop.appendChild(tab);
     divTop.appendChild(newTab);
     content.appendChild(divTop);    
+
+    createEventListener(pTitle);
 }
 
 function creatContNote(note) {
@@ -50,23 +49,18 @@ function createNote(note) {
     creatContNote(note);
 }
 
-function saveNote() {
-    let note = document.getElementById('note-textarea').value;
-    chrome.storage.local.set({ note2: note })
-    console.log(note);
+function setNote(note) {
+    let textArea = document.getElementById("note-textarea");
+    textArea.value = note.content;
 }
 
-function getNote() {
-    /*chrome.storage.local.get(["note1"]).then((result) => {
-        console.log(result.note1);
-    });*/
-    chrome.storage.local.get(null, (result) => {
-        console.log("All stored items:", result);
-    });
+function saveNote(note) {
+    const data = {};
+    data[note._id] = note;
+    chrome.storage.local.set(data);
 }
 
 function createNewTab() {
-
     let existingTabs = document.getElementsByClassName("tab");
     let lastTab = existingTabs[existingTabs.length - 1];
     let note = new Note();
@@ -74,16 +68,44 @@ function createNewTab() {
     let newTab = document.createElement('div');
     let p = document.createElement('p');
     newTab.classList.add('tab');
-    p.textContent = "N " + note.title.charAt(note.title.length - 1);
+    p.textContent = note.title;
+    p.id = note.id;
+    setNote(note);
+    saveNote(note);
 
     newTab.appendChild(p);
     lastTab.parentNode.insertBefore(newTab, lastTab.nextSibling);
+
+    createEventListener(p);
+}
+
+function createEventListener(element) {
+    let originalCont;
+
+    element.addEventListener('dblclick', () => {
+        originalCont = element.textContent;
+        element.contentEditable = true;
+    });
+
+    document.addEventListener('click', (e) => {
+        if (element.contentEditable === "true" && !element.contains(e.target)) {
+            if (originalCont != element.textContent) {
+                chrome.storage.local.get([element.id]).then((result) => {
+                    let note = result[Object.keys(result)[0]];
+                    note._title = element.textContent;
+                    saveNote(note);
+                });
+            } 
+            element.contentEditable = false;
+        }
+    });
 }
 
 createB.addEventListener("click", () => {
     createB.style.display = "none";
     let note = new Note();
     createNote(note);
+    saveNote(note);
 
     let addTabB = document.getElementById('add-tab');
 

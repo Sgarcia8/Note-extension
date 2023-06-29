@@ -2,7 +2,7 @@ let create_b = document.getElementById("button-create");
 let organize_b = document.getElementById("button-organize");
 let first_view = document.getElementById("view-one");
 let second_view = document.getElementById("view-two");
-let numNotes = 0;
+let numNotes;
 
 function assignView(view) {
     if (view.classList.value === "content-1") {
@@ -23,7 +23,7 @@ function createList(object) {
             let div = document.createElement("div");
             let h1 = document.createElement("h1");
             
-            h1.textContent = key
+            h1.textContent = object[key]._title;
 
             div.appendChild(h1);
             item.appendChild(div);
@@ -36,9 +36,17 @@ function createList(object) {
     second_view.appendChild(ul);
 }
 
+function clearSecondView() {
+    while (second_view.firstChild) {
+        second_view.removeChild(second_view.firstChild);
+    }
+}
+
 function loadSecondView() {
+    clearSecondView();
+
     chrome.storage.local.get(null, (result) => {
-        if (result.valueOf.length != 0) {
+        if (Object.keys(result).length !== 0) {
             createList(result);
         } else {
             second_view.classList.add('content-2');
@@ -47,6 +55,7 @@ function loadSecondView() {
             p.appendChild(textNode);
             second_view.appendChild(p);
         }
+        numNotes = Object.keys(result).length;
     });
 }
 
@@ -61,7 +70,13 @@ organize_b.addEventListener("click", () => {
         second_view.style.display = 'flex';
         first_view.style.display = 'none';
     }
+
+    chrome.storage.local.get(null, (result) => {
+        if (Object.keys(result).length !== numNotes) {
+            loadSecondView();
+        }
+    });
 });
 
-chrome.storage.local.clear();
+//chrome.storage.local.clear();
 loadSecondView();
