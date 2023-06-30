@@ -115,3 +115,5 @@ createB.addEventListener("click", () => {
         });
     }
 });
+
+Note.setCount();

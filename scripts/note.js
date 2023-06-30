@@ -2,11 +2,11 @@ class Note{
 
     static count = 0;
 
-    constructor(){
-        Note.count ++;
-        this._title = "N "+Note.count
-        this._content = ""
-        this._id = "note"+Note.count
+    constructor() {
+        Note.count++;
+        this._title = "N " + Note.count;
+        this._content = "";
+        this._id = "note" + Note.count;
     }
 
     get title(){
@@ -23,6 +23,13 @@ class Note{
 
     get id(){
         return this._id;
+    }
+
+    static setCount() {
+        chrome.storage.local.get(null, (result) => {
+            console.log(Object.keys(result).length);
+            this.count = Object.keys(result).length;
+        });
     }
 }
 
