@@ -78,5 +78,5 @@ organize_b.addEventListener("click", () => {
     });
 });
 
-//chrome.storage.local.clear();
+chrome.storage.local.clear();
 loadSecondView();

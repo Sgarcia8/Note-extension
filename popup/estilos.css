@@ -102,11 +102,19 @@ div.img.config {
 }
 
 .content-2-notes ul li {
-    border: solid 1px black;
+    border: solid 2px #ecb755;
+    margin: 5px;
+    border-radius: 6%;
+    transition: background-color 1s;
+    cursor: pointer;
+}
+
+.content-2-notes ul li:hover {
+    background-color: #bf8315;
 }
 
 .content-2-notes ul h1 {
-    margin: 0;
+    margin: 3px;
 }
 
 .note-top {
@@ -154,14 +162,14 @@ div.img.config {
 
 .tab {
     background-color: #ecb755;
-    width: 17%;
+    width: 27%;
     height: 70%;
     cursor: pointer;
     border-radius: 5px 14px 0 0;
     transition: background-color 1s;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
 }
   
 .tab:hover {
@@ -208,4 +216,14 @@ div.img.config {
     margin: 0;
     font-weight: bold;
     cursor: auto;
+    width: 55%;
+    margin-left: 5px;
+}
+
+.close-button {
+    background-color: red;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    margin-right: 5px;
 }

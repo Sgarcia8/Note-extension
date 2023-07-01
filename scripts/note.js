@@ -27,7 +27,6 @@ class Note{
 
     static setCount() {
         chrome.storage.local.get(null, (result) => {
-            console.log(Object.keys(result).length);
             this.count = Object.keys(result).length;
         });
     }

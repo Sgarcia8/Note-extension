@@ -2,6 +2,7 @@ import Note from "./note.js";
 
 let createB = document.getElementById("principal-b");
 let content = document.getElementById('view-one');
+let currentTab;
 
 function createTopNote(note) {
     let divTop = document.createElement('div');
@@ -9,6 +10,7 @@ function createTopNote(note) {
     let pTitle = document.createElement('p');
     let newTab = document.createElement('div');
     let p = document.createElement('p');
+    let closeB = document.createElement('div');
 
     divTop.classList.add('note-top');
     tab.classList.add('tab');
@@ -17,14 +19,19 @@ function createTopNote(note) {
     newTab.classList.add('new-tab');
     newTab.id = 'add-tab';
     p.textContent = "+";
+    closeB.classList.add('close-button');
     
     tab.appendChild(pTitle);
+    tab.appendChild(closeB);
     newTab.appendChild(p);
     divTop.appendChild(tab);
     divTop.appendChild(newTab);
     content.appendChild(divTop);    
 
-    createEventListener(pTitle);
+    currentTab = pTitle.id;
+
+    createEventListenerP(pTitle);
+    createEventListenerTab(tab);
 }
 
 function creatContNote(note) {
@@ -38,6 +45,8 @@ function creatContNote(note) {
     
     divC.appendChild(textarea);
     content.appendChild(divC);
+
+    createEventListenerTextA(textarea);
 }
 
 function createNote(note) {
@@ -49,9 +58,21 @@ function createNote(note) {
     creatContNote(note);
 }
 
-function setNote(note) {
+function saveContNote(value) {
+    chrome.storage.local.get([currentTab]).then((result) => {
+        let note = result[Object.keys(result)[0]];
+        note._content = value;
+        saveNote(note);
+    });
+}
+
+function setNote() {
     let textArea = document.getElementById("note-textarea");
-    textArea.value = note.content;
+
+    chrome.storage.local.get([currentTab]).then((result) => {
+        let note = result[Object.keys(result)[0]];
+        textArea.value = note._content;
+    });
 }
 
 function saveNote(note) {
@@ -67,19 +88,39 @@ function createNewTab() {
 
     let newTab = document.createElement('div');
     let p = document.createElement('p');
+    let closeB = document.createElement('div');
     newTab.classList.add('tab');
     p.textContent = note.title;
     p.id = note.id;
-    setNote(note);
+    closeB.classList.add('close-button');
     saveNote(note);
 
     newTab.appendChild(p);
+    newTab.appendChild(closeB);
     lastTab.parentNode.insertBefore(newTab, lastTab.nextSibling);
 
-    createEventListener(p);
+    currentTab = p.id;
+
+    createEventListenerP(p);
+    createEventListenerTab(newTab);
+
+    setNote();
 }
 
-function createEventListener(element) {
+function createEventListenerTextA(element) {
+    element.addEventListener("input", () => {
+        saveContNote(element.value);
+      });
+}
+
+function createEventListenerTab(element) {
+    element.addEventListener('click', () => {
+        currentTab = element.querySelector('.tab p').id;
+        setNote();
+    });
+}
+
+function createEventListenerP(element) {
     let originalCont;
 
     element.addEventListener('dblclick', () => {
