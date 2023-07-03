@@ -32,6 +32,7 @@ function createTopNote(note) {
 
     createEventListenerP(pTitle);
     createEventListenerTab(tab);
+    createEventListenerCloseB(closeB);
 }
 
 function creatContNote(note) {
@@ -103,8 +104,15 @@ function createNewTab() {
 
     createEventListenerP(p);
     createEventListenerTab(newTab);
+    createEventListenerCloseB(closeB);
 
     setNote();
+}
+
+function createEventListenerCloseB(element) {
+    element.addEventListener("click", () => {
+        element.parentNode.style.display = "none";
+    });
 }
 
 function createEventListenerTextA(element) {

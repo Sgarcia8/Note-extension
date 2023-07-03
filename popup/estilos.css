@@ -57,6 +57,11 @@ div.img.config {
     background: url('../images/configuraciones.png') no-repeat center center;
 }
 
+div.img.delete {
+    margin: 0 15px;
+    background: url('../images/borrar.png') no-repeat center center;
+}
+
 .content-1 {
     display: flex;
     justify-content: center;
@@ -110,7 +115,21 @@ div.img.config {
 }
 
 .content-2-notes ul li:hover {
-    background-color: #bf8315;
+    background-color: #ffd594;
+}
+
+.content-2-notes ul li div {
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+}
+
+.content-2-notes ul li div .delete {
+    transition: transform 0.3s ease;
+}
+
+.content-2-notes ul li div .delete:hover {
+    transform: scale(1.3);
 }
 
 .content-2-notes ul h1 {

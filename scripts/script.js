@@ -22,12 +22,19 @@ function createList(object) {
             let item = document.createElement("li");
             let div = document.createElement("div");
             let h1 = document.createElement("h1");
+            let divD = document.createElement("div");
             
             h1.textContent = object[key]._title;
+            divD.classList.add('img');
+            divD.classList.add('delete');
+            divD.id = key;
 
             div.appendChild(h1);
+            div.appendChild(divD);
             item.appendChild(div);
             ul.appendChild(item);
+
+            createEventListenerDel(divD);
         }
     }
 
@@ -56,6 +63,14 @@ function loadSecondView() {
             second_view.appendChild(p);
         }
         numNotes = Object.keys(result).length;
+    });
+}
+
+function createEventListenerDel(element) {
+    element.addEventListener('click', () => {
+        chrome.storage.local.remove(element.id, () => {
+            loadSecondView();
+        });
     });
 }
 
