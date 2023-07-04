@@ -2,7 +2,12 @@ import Note from "./note.js";
 
 let createB = document.getElementById("principal-b");
 let content = document.getElementById('view-one');
+let comodin = document.getElementById('button-personalize');
 let currentTab;
+
+export function setCurrentTab(id) {
+    currentTab = id;
+}
 
 function createTopNote(note) {
     let divTop = document.createElement('div');
@@ -67,7 +72,7 @@ function saveContNote(value) {
     });
 }
 
-function setNote() {
+export function setNote() {
     let textArea = document.getElementById("note-textarea");
 
     chrome.storage.local.get([currentTab]).then((result) => {
@@ -109,9 +114,10 @@ function createNewTab() {
     setNote();
 }
 
-function createEventListenerCloseB(element) {
+export function createEventListenerCloseB(element) {
     element.addEventListener("click", () => {
-        element.parentNode.style.display = "none";
+        let noteBar = element.parentNode.parentNode;
+        noteBar.removeChild(element.parentNode);
     });
 }
 
@@ -121,14 +127,14 @@ function createEventListenerTextA(element) {
       });
 }
 
-function createEventListenerTab(element) {
+export function createEventListenerTab(element) {
     element.addEventListener('click', () => {
         currentTab = element.querySelector('.tab p').id;
         setNote();
     });
 }
 
-function createEventListenerP(element) {
+export function createEventListenerP(element) {
     let originalCont;
 
     element.addEventListener('dblclick', () => {
@@ -165,4 +171,9 @@ createB.addEventListener("click", () => {
     }
 });
 
+comodin.addEventListener("click", () => {
+    Note.setCount();    
+})
+
+//chrome.storage.local.clear();
 Note.setCount();

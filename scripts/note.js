@@ -26,8 +26,16 @@ class Note{
     }
 
     static setCount() {
+        let bigNum = 0
+
         chrome.storage.local.get(null, (result) => {
-            this.count = Object.keys(result).length;
+            for(let key in result) {
+                if (key.charAt(key.length - 1) > bigNum) {
+                    bigNum = key.charAt(key.length - 1);
+                }
+            }
+
+            Note.count = bigNum;
         });
     }
 }

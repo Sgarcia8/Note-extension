@@ -1,3 +1,5 @@
+import { createEventListenerCloseB, createEventListenerP, createEventListenerTab, setNote, setCurrentTab } from "./notas.js";
+
 let create_b = document.getElementById("button-create");
 let organize_b = document.getElementById("button-organize");
 let first_view = document.getElementById("view-one");
@@ -35,6 +37,7 @@ function createList(object) {
             ul.appendChild(item);
 
             createEventListenerDel(divD);
+            createEventListenerDiv(div);
         }
     }
 
@@ -47,6 +50,22 @@ function clearSecondView() {
     while (second_view.firstChild) {
         second_view.removeChild(second_view.firstChild);
     }
+}
+
+function updateFirstView() {
+    let divs = document.querySelectorAll(".note-top .tab");
+    let tabs = Array.from(divs);
+
+    tabs.forEach(function(tab){
+        let id = tab.querySelector('.tab p').id;
+        
+        chrome.storage.local.get(id, (result) => {
+            if (!Object.keys(result).includes(id)) {
+                let notebar = tab.parentNode;
+                notebar.removeChild(tab);
+            }
+        });
+    });
 }
 
 function loadSecondView() {
@@ -66,10 +85,76 @@ function loadSecondView() {
     });
 }
 
+function tabExists(key, tabs) {
+    let exists = false;
+    Array.from(tabs).some(function(tab) {
+        let id = tab.querySelector('p').id;
+
+        if (id === key) {
+            exists = true;
+            return true;
+        } else {
+            exists = false;
+            return false;
+        }
+    });
+    console.log(exists);
+    return exists;
+}
+
+function openTab(object) {
+    
+    for (let key in object) {
+        if (object.hasOwnProperty(key)) {
+            let existingTabs = document.getElementsByClassName("tab");
+
+            if (tabExists(key, existingTabs)){
+                setCurrentTab(object[key]._id);
+            } else {
+                let lastTab = existingTabs[existingTabs.length - 1];
+                let newTab = document.createElement('div');
+                let p = document.createElement('p');
+                let closeB = document.createElement('div');
+                newTab.classList.add('tab');
+                p.textContent = object[key]._title;
+                p.id = object[key]._id;
+                closeB.classList.add('close-button');
+
+                newTab.appendChild(p);
+                newTab.appendChild(closeB);
+                lastTab.parentNode.insertBefore(newTab, lastTab.nextSibling);
+
+                setCurrentTab(p.id);
+
+                createEventListenerP(p);
+                createEventListenerTab(newTab);
+                createEventListenerCloseB(closeB);
+            }
+
+            setNote();
+        }
+    }
+
+    if (getComputedStyle(first_view).getPropertyValue("display") == 'none') {
+        assignView(first_view);
+    }
+}
+
+function createEventListenerDiv(element) {
+    element.addEventListener('click', () =>{
+        let id = element.querySelector('.img').id;
+
+        chrome.storage.local.get(id, (result) => {
+            openTab(result);
+        });
+    });
+}
+
 function createEventListenerDel(element) {
     element.addEventListener('click', () => {
         chrome.storage.local.remove(element.id, () => {
             loadSecondView();
+            updateFirstView();
         });
     });
 }
@@ -93,5 +178,5 @@ organize_b.addEventListener("click", () => {
     });
 });
 
-chrome.storage.local.clear();
+//chrome.storage.local.clear();
 loadSecondView();
