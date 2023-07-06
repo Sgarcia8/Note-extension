@@ -122,10 +122,29 @@ function createNewTab() {
     setNote();
 }
 
+function loadFirstview() {
+    let noteTop = document.querySelector('.note-top');
+    let noteContent = document.querySelector('.note-content');
+
+    content.removeChild(noteTop);
+    content.removeChild(noteContent);
+
+    content.classList.remove('content-1-grid');
+    content.classList.add('content-1');
+    content.style.display = 'flex';
+    createB.style.display = "flex";
+}
+
 export function createEventListenerCloseB(element) {
     element.addEventListener("click", () => {
         let noteBar = element.parentNode.parentNode;
+        let existingTabs = document.getElementsByClassName("tab");
+
         noteBar.removeChild(element.parentNode);
+
+        if (existingTabs.length === 0) {
+            loadFirstview();
+        }
     });
 }
 
@@ -136,9 +155,11 @@ function createEventListenerTextA(element) {
 }
 
 export function createEventListenerTab(element) {
-    element.addEventListener('click', () => {
-        currentTab = element.querySelector('.tab p').id;
-        setNote();
+    element.addEventListener('click', (event) => {
+        if (!event.target.closest('.close-button')) {
+            currentTab = element.querySelector('.tab p').id;
+            setNote();
+        }
     });
 }
 

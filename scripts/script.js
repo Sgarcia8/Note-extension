@@ -98,7 +98,6 @@ function tabExists(key, tabs) {
             return false;
         }
     });
-    console.log(exists);
     return exists;
 }
 
@@ -193,5 +192,4 @@ organize_b.addEventListener("click", () => {
     });
 });
 
-//chrome.storage.local.clear();
 loadSecondView();
