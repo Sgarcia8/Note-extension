@@ -1,4 +1,4 @@
-import { createEventListenerCloseB, createEventListenerP, createEventListenerTab, setNote, setCurrentTab } from "./notas.js";
+import { createEventListenerCloseB, createEventListenerP, createEventListenerTab, setNote, setCurrentTab, createNote } from "./notas.js";
 
 let create_b = document.getElementById("button-create");
 let organize_b = document.getElementById("button-organize");
@@ -108,29 +108,44 @@ function openTab(object) {
         if (object.hasOwnProperty(key)) {
             let existingTabs = document.getElementsByClassName("tab");
 
-            if (tabExists(key, existingTabs)){
-                setCurrentTab(object[key]._id);
+            if (existingTabs.length === 0) {
+                createNote(object[key]._title, object[key]._id, object[key]._content);
+
+                if (getComputedStyle(second_view).getPropertyValue("display") != 'none') {
+                    second_view.style.display = 'none';
+                    //first_view.style.display = 'none';
+                }
+
+                let button = document.getElementById("principal-b");
+                button.style.display = 'none';
             } else {
-                let lastTab = existingTabs[existingTabs.length - 1];
-                let newTab = document.createElement('div');
-                let p = document.createElement('p');
-                let closeB = document.createElement('div');
-                newTab.classList.add('tab');
-                p.textContent = object[key]._title;
-                p.id = object[key]._id;
-                closeB.classList.add('close-button');
+                if (tabExists(key, existingTabs)){
+                    setCurrentTab(object[key]._id);
+                } else {
+                    let lastTab = existingTabs[existingTabs.length - 1];
+                    let newTab = document.createElement('div');
+                    let p = document.createElement('p');
+                    let closeB = document.createElement('div');
+                    let pClose = document.createElement('p');
 
-                newTab.appendChild(p);
-                newTab.appendChild(closeB);
-                lastTab.parentNode.insertBefore(newTab, lastTab.nextSibling);
-
-                setCurrentTab(p.id);
-
-                createEventListenerP(p);
-                createEventListenerTab(newTab);
-                createEventListenerCloseB(closeB);
+                    newTab.classList.add('tab');
+                    p.textContent = object[key]._title;
+                    p.id = object[key]._id;
+                    closeB.classList.add('close-button');
+                    pClose.textContent = "x";
+    
+                    closeB.appendChild(pClose);
+                    newTab.appendChild(p);
+                    newTab.appendChild(closeB);
+                    lastTab.parentNode.insertBefore(newTab, lastTab.nextSibling);
+    
+                    setCurrentTab(p.id);
+    
+                    createEventListenerP(p);
+                    createEventListenerTab(newTab);
+                    createEventListenerCloseB(closeB);
+                }
             }
-
             setNote();
         }
     }

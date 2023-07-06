@@ -240,9 +240,25 @@ div.img.delete {
 }
 
 .close-button {
-    background-color: red;
+    background-color: transparent;
     width: 13px;
     height: 13px;
     border-radius: 50%;
     margin-right: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-button:hover {
+    background-color: red;
+    transition: background-color 1s;
+}
+
+.close-button p {
+    cursor: inherit;
+    margin: 0;
+    font-weight: normal;
+    width: auto;
+    height: 18px;
 }

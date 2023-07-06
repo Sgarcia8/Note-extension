@@ -9,23 +9,26 @@ export function setCurrentTab(id) {
     currentTab = id;
 }
 
-function createTopNote(note) {
+function createTopNote(title, id) {
     let divTop = document.createElement('div');
     let tab = document.createElement('div');
     let pTitle = document.createElement('p');
     let newTab = document.createElement('div');
     let p = document.createElement('p');
     let closeB = document.createElement('div');
+    let pClose = document.createElement('p');
 
     divTop.classList.add('note-top');
     tab.classList.add('tab');
-    pTitle.textContent = note.title;
-    pTitle.id = note.id;
+    pTitle.textContent = title;
+    pTitle.id = id;
     newTab.classList.add('new-tab');
     newTab.id = 'add-tab';
     p.textContent = "+";
     closeB.classList.add('close-button');
+    pClose.textContent = "x";
     
+    closeB.appendChild(pClose);
     tab.appendChild(pTitle);
     tab.appendChild(closeB);
     newTab.appendChild(p);
@@ -38,15 +41,16 @@ function createTopNote(note) {
     createEventListenerP(pTitle);
     createEventListenerTab(tab);
     createEventListenerCloseB(closeB);
+    createEventListenerNewTab(newTab);
 }
 
-function creatContNote(note) {
+function creatContNote(cont) {
     let divC = document.createElement('div');
     let textarea = document.createElement('textarea');
 
     divC.classList.add('note-content');
     textarea.id = 'note-textarea';
-    textarea.value = note.content;
+    textarea.value = cont;
 
     
     divC.appendChild(textarea);
@@ -55,13 +59,13 @@ function creatContNote(note) {
     createEventListenerTextA(textarea);
 }
 
-function createNote(note) {
+export function createNote(title, id, cont) {
     content.classList.remove('content-1');
     content.classList.add('content-1-grid');
     content.style.display = 'grid';
     
-    createTopNote(note);
-    creatContNote(note);
+    createTopNote(title, id);
+    creatContNote(cont);
 }
 
 function saveContNote(value) {
@@ -95,12 +99,16 @@ function createNewTab() {
     let newTab = document.createElement('div');
     let p = document.createElement('p');
     let closeB = document.createElement('div');
+    let pClose = document.createElement('p');
+
     newTab.classList.add('tab');
     p.textContent = note.title;
     p.id = note.id;
     closeB.classList.add('close-button');
+    pClose.textContent = "x";
     saveNote(note);
 
+    closeB.appendChild(pClose);
     newTab.appendChild(p);
     newTab.appendChild(closeB);
     lastTab.parentNode.insertBefore(newTab, lastTab.nextSibling);
@@ -156,24 +164,21 @@ export function createEventListenerP(element) {
     });
 }
 
+export function createEventListenerNewTab(element) {
+    element.addEventListener("click", () => {
+        createNewTab();
+    });
+}
+
 createB.addEventListener("click", () => {
     createB.style.display = "none";
     let note = new Note();
-    createNote(note);
+    createNote(note.title, note.id, note.content);
     saveNote(note);
-
-    let addTabB = document.getElementById('add-tab');
-
-    if (addTabB) {
-        addTabB.addEventListener("click", () => {
-            createNewTab();
-        });
-    }
 });
 
 comodin.addEventListener("click", () => {
     Note.setCount();    
 })
 
-//chrome.storage.local.clear();
 Note.setCount();
