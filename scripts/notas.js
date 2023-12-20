@@ -1,14 +1,26 @@
 import Note from "./note.js";
+import { saveNote, getAllNotes, getNoteById, deleteAll } from "./NotesPers.js";
+import { loadSecondView } from "./script.js";
 
 let createB = document.getElementById("principal-b");
 let content = document.getElementById('view-one');
 let comodin = document.getElementById('button-personalize');
 let currentTab;
+let notes;
 
 export function setCurrentTab(id) {
     currentTab = id;
 }
 
+export async function setAllNotes() {
+    notes = await getAllNotes();
+}
+
+/*######################################################################
+#  FUNCIONES DE CREACIÓN DE HTML 
+######################################################################*/
+
+// CREA EL NAVBAR DE LA SECCIÓN DE NOTAS
 function createTopNote(title, id) {
     let divTop = document.createElement('div');
     let tab = document.createElement('div');
@@ -44,6 +56,7 @@ function createTopNote(title, id) {
     createEventListenerNewTab(newTab);
 }
 
+// CREA EL HTML DEL CONTENIDO, DONDE EL USUARIO ESCRIBIRA SUS NOTAS
 function creatContNote(cont) {
     let divC = document.createElement('div');
     let textarea = document.createElement('textarea');
@@ -59,6 +72,7 @@ function creatContNote(cont) {
     createEventListenerTextA(textarea);
 }
 
+// CREA EL HTML DE LA NOTA EN GENERAL
 export function createNote(title, id, cont) {
     content.classList.remove('content-1');
     content.classList.add('content-1-grid');
@@ -68,30 +82,8 @@ export function createNote(title, id, cont) {
     creatContNote(cont);
 }
 
-function saveContNote(value) {
-    chrome.storage.local.get([currentTab]).then((result) => {
-        let note = result[Object.keys(result)[0]];
-        note._content = value;
-        saveNote(note);
-    });
-}
-
-export function setNote() {
-    let textArea = document.getElementById("note-textarea");
-
-    chrome.storage.local.get([currentTab]).then((result) => {
-        let note = result[Object.keys(result)[0]];
-        textArea.value = note._content;
-    });
-}
-
-function saveNote(note) {
-    const data = {};
-    data[note._id] = note;
-    chrome.storage.local.set(data);
-}
-
-function createNewTab() {
+// AÑADE UNA NUEVA PESTAÑA AL NAVBAR DE LAS NOTAS
+async function createNewTab() {
     let existingTabs = document.getElementsByClassName("tab");
     let lastTab = existingTabs[existingTabs.length - 1];
     let note = new Note();
@@ -106,7 +98,7 @@ function createNewTab() {
     p.id = note.id;
     closeB.classList.add('close-button');
     pClose.textContent = "x";
-    saveNote(note);
+    await saveNote(note, notes);
 
     closeB.appendChild(pClose);
     newTab.appendChild(p);
@@ -119,9 +111,10 @@ function createNewTab() {
     createEventListenerTab(newTab);
     createEventListenerCloseB(closeB);
 
-    setNote();
+    await setNote();
 }
 
+// CARGA LA VISTA PRINCIPAL DE LA FORMA ORIGINAL
 function loadFirstview() {
     let noteTop = document.querySelector('.note-top');
     let noteContent = document.querySelector('.note-content');
@@ -135,6 +128,11 @@ function loadFirstview() {
     createB.style.display = "flex";
 }
 
+/*######################################################################
+#  FUNCIONES DE ASIGNACIÓN DE EVENT LISTENERS
+######################################################################*/
+
+// ASIGNA EL EVENT LISTENER A LOS DE CIERRE DE PESTAÑAS
 export function createEventListenerCloseB(element) {
     element.addEventListener("click", () => {
         let noteBar = element.parentNode.parentNode;
@@ -148,21 +146,24 @@ export function createEventListenerCloseB(element) {
     });
 }
 
+// ASIGNA EL EVENT LISTENER A LOS TEXT AREA DONDE EL USUARIO ESCRIBE LAS NOTAS
 function createEventListenerTextA(element) {
-    element.addEventListener("input", () => {
-        saveContNote(element.value);
+    element.addEventListener("input", async () => {
+        await saveContNote(element.value);
       });
 }
 
+// ASIGNA EL EVENT LISTENER A LAS PESTAÑAS DEL NAVBAR, FUNCIONA PARA PODER CAMBIAR DE PESTAÑA
 export function createEventListenerTab(element) {
-    element.addEventListener('click', (event) => {
-        if (!event.target.closest('.close-button')) {
+    element.addEventListener('click', async (event) => {
+        if (!event.target.closest('.close-button') && element.querySelector('.tab p').id != currentTab) {
             currentTab = element.querySelector('.tab p').id;
-            setNote();
+            await setNote();
         }
     });
 }
 
+// ASIGNA EL EVENT LISTENER A LOS ELEMENTOS P QUE ESTAN DENTRO DE LAS PESTAÑAS (EL TEXTO), FUNCIONA PARA PODER CAMBIAR EL TITULO DE LA NOTA
 export function createEventListenerP(element) {
     let originalCont;
 
@@ -171,35 +172,79 @@ export function createEventListenerP(element) {
         element.contentEditable = true;
     });
 
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', async (e) => {
         if (element.contentEditable === "true" && !element.contains(e.target)) {
             if (originalCont != element.textContent) {
-                chrome.storage.local.get([element.id]).then((result) => {
-                    let note = result[Object.keys(result)[0]];
+                let note = await getNoteById(element.id);
+                if (note) {
                     note._title = element.textContent;
-                    saveNote(note);
-                });
+                    await saveNote(note, notes);
+                    await loadSecondView();
+                }
             } 
             element.contentEditable = false;
         }
     });
 }
 
+// ASIGNA EL EVENT LISTENER AL BOTÓN DE AÑADIR UNA NUEVA PESTAÑA
 export function createEventListenerNewTab(element) {
-    element.addEventListener("click", () => {
-        createNewTab();
+    element.addEventListener("click", async () => {
+        await createNewTab();
     });
 }
 
-createB.addEventListener("click", () => {
+/*######################################################################
+#  FUNCIONES DE LOGICA DE LAS NOTAS
+######################################################################*/
+
+// ASIGNA VALOR AL CONTENIDO DE UNA NOTA Y LA GUARDA, ESTO SUCEDE CADA VEZ QUE EL USUARIO ESCRIBE EN EL TEXT AREA
+async function saveContNote(value) {
+    try {
+        let note = await getNoteById(currentTab);
+        if (note) {
+            note._content = value;
+            await saveNote(note, notes);
+        }
+    } catch (error) {
+        console.error("Error al guardar la nota:", error);
+    }
+}
+
+// ASIGNA EL CONTENIDO DEL TEXT AREA DE UNA NOTA, SETEA EL CONTENIDO CON LA NOTA SELECCIONADA
+export async function setNote() {
+    let textArea = document.getElementById("note-textarea");
+
+    try {
+        let note = await getNoteById(currentTab);
+        if (note) {
+            textArea.value = note._content;
+        }
+    } catch (error) {
+        console.error("Error al guardar la nota:", error);
+    }
+}
+
+/*######################################################################
+#  ASIGNACIÓN DE LISTENERS A ELEMENTOS ESPECIFICOS
+######################################################################*/
+
+
+// LISTENER ASIGNADO AL BOTÓN DE LA VISTA 1 PARA CREAR UNA NUEVA NOTA
+createB.addEventListener("click", async () => {
     createB.style.display = "none";
     let note = new Note();
-    createNote(note.title, note.id, note.content);
-    saveNote(note);
+    createNote(note.title, note.id, note.content); //Se encarga de asignar la interfaz adecuada para crear una nota
+    await saveNote(note, notes);
+    await setAllNotes();
 });
 
-comodin.addEventListener("click", () => {
-    Note.setCount();    
+comodin.addEventListener("click", async () => {
+    //let notasp = await getAllNotes();
+    //console.log('notasp: ', notasp);
+    //console.log('notes: ', notes);
+    deleteAll();
 })
 
 Note.setCount();
+setAllNotes();

@@ -1,3 +1,5 @@
+import { getAllNotes } from "./NotesPers.js";
+
 class Note{
 
     static count = 0;
@@ -25,18 +27,19 @@ class Note{
         return this._id;
     }
 
-    static setCount() {
+    static async setCount() {
         let bigNum = 0
-
-        chrome.storage.local.get(null, (result) => {
-            for(let key in result) {
+        const notes = await getAllNotes();
+        
+        if (notes) {
+            for(let key in notes) {
                 if (key.charAt(key.length - 1) > bigNum) {
                     bigNum = key.charAt(key.length - 1);
                 }
             }
+        }
 
-            Note.count = bigNum;
-        });
+        Note.count = bigNum;
     }
 }
 
