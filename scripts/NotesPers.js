@@ -66,6 +66,7 @@ export function deleteNote(id) {
     });
 }
 
+/*------------------------------------------------------------------------------------------------*/
 
 //ELIMINAR TODDO EL STORAGE
 export async function deleteAll() {
@@ -74,4 +75,13 @@ export async function deleteAll() {
     } catch (error) {
         console.log(error);
     }
+}
+
+//TRAE TODO LO QUE HAY EN EL STORAGE
+export async function getAll() {
+    return new Promise((resolve) => {
+        chrome.storage.local.get(null, (result) => {
+            resolve(result);
+        });
+    });
 }
