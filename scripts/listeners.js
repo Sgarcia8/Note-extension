@@ -1,10 +1,10 @@
-import { getCurrentTab, getNotes, setCurrentTab, setNotes } from "./main.js";
+import { getCurrentTab, getCurrentView, getExistingTabs, getNotes, setCurrentTab, setNotes, setInfo, setCurrentView } from "./main.js";
 import { loadFirstview, updateFirstView, loadSecondView, saveContNote, setNote, createNewTab, openTab } from "./views.js";
 import { getNoteById, saveNote, deleteNote } from "./NotesPers.js";
 
 // ASIGNA EL EVENT LISTENER A LOS DE CIERRE DE PESTAÑAS
 export function createEventListenerCloseB(element) {
-    element.addEventListener("click", () => {
+    element.addEventListener("click", async () => {
         let noteBar = element.parentNode.parentNode;
         let existingTabs = document.getElementsByClassName("tab");
 
@@ -12,6 +12,17 @@ export function createEventListenerCloseB(element) {
 
         if (existingTabs.length === 0) {
             loadFirstview();
+            setCurrentTab(null);
+        } else {
+            let lastTab = existingTabs[existingTabs.length - 1];
+            setCurrentTab(lastTab.querySelector('p').id);
+            await setNote();
+        }
+        const tabs = getExistingTabs();
+        try {
+            await setInfo(getCurrentView(), getCurrentTab(), tabs);   
+        } catch (error) {
+            console.log('Error al setear la información: ', error);
         }
     });
 }
@@ -27,8 +38,15 @@ export function createEventListenerTextA(element) {
 export function createEventListenerTab(element) {
     element.addEventListener('click', async (event) => {
         if (!event.target.closest('.close-button') && element.querySelector('.tab p').id != getCurrentTab()) {
+            setCurrentView(1)
             setCurrentTab(element.querySelector('.tab p').id);
             await setNote();
+            const tabs = getExistingTabs();
+            try {
+                await setInfo(getCurrentView(), getCurrentTab(), tabs);   
+            } catch (error) {
+                console.log('Error al setear la información: ', error);
+            }
         }
     });
 }
@@ -61,6 +79,13 @@ export function createEventListenerP(element) {
 export function createEventListenerNewTab(element) {
     element.addEventListener("click", async () => {
         await createNewTab();
+        setCurrentView(1);
+        const tabs = getExistingTabs();
+        try {
+            await setInfo(getCurrentView(), getCurrentTab(), tabs);   
+        } catch (error) {
+            console.log('Error al setear la información: ', error);
+        }
     });
 }
 
@@ -81,6 +106,13 @@ export function createEventListenerDiv(element) {
             }
         } catch (error) {
             console.error("Error al guardar la nota:", error);
+        }
+        setCurrentView(1);
+        const tabs = getExistingTabs();
+        try {
+            await setInfo(getCurrentView(), getCurrentTab(), tabs);   
+        } catch (error) {
+            console.log('Error al setear la información: ', error);
         }
     });
 }

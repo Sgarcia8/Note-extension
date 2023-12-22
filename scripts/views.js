@@ -1,5 +1,5 @@
 import Note from "./note.js";
-import { setCurrentTab, getCurrentTab, getNotes, setNumNotes } from "./main.js";
+import { setCurrentTab, getCurrentTab, getNotes, setNumNotes, getCurrentView } from "./main.js";
 import { saveNote, getNoteById, getAllNotes } from "./NotesPers.js";
 import { createEventListenerP, createEventListenerTab, createEventListenerCloseB, createEventListenerNewTab, createEventListenerTextA, createEventListenerDel, createEventListenerDiv } from "./listeners.js";
 
@@ -311,5 +311,34 @@ export function assignView(view) {
     } else if (view.classList.value === "content-1-grid") {
         first_view.style.display = 'grid';
         second_view.style.display = 'none';
+    }
+}
+
+export async function loadInitView(info) {
+    const view = getCurrentView();
+    const currentTab = getCurrentTab();
+    if (view === 1 && info) {
+        if ('existingTabs' in info) {
+            // que se abra la primerea vista con las tabs existentes
+            const tabs = info.existingTabs
+            for (const tab of tabs) {
+                let note = await getNoteById(tab);
+                if (note) {
+                    await openTab(note);
+                }
+            }
+
+            setCurrentTab(currentTab);
+            await setNote();
+        } else {
+            // que se abra en la vista de create new note
+            return;
+        }
+    } else if (view === 2) {
+        // que se abra en la segunda vista de lista de notas
+        if (getComputedStyle(second_view).getPropertyValue("display") == 'none') {
+            second_view.style.display = 'flex';
+            first_view.style.display = 'none';
+        }
     }
 }

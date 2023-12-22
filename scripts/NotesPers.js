@@ -1,3 +1,7 @@
+/*-----------------------------------------------------------------*/
+/* ------------------- PERSISTENCIA DE NOTAS --------------------- */
+/*-----------------------------------------------------------------*/
+
 // GUARDA UNA NOTA
 export async function saveNote(note, notes) {
     let data = {};
@@ -17,10 +21,8 @@ export function getAllNotes() {
     return new Promise((resolve) => {
         chrome.storage.local.get('notes', (data) => {
             if ('notes' in data  && data['notes'] && Object.keys(data['notes']).length > 0) {
-                console.log('Notas encontradas (GetAll): ', data, data['notes']);
                 resolve(data['notes']);
             } else {
-                console.log('No hay notas (GetAll): ');
                 resolve(null);
             }
         });
@@ -32,10 +34,8 @@ export function getNoteById(id) {
     return new Promise((resolve) => {
         chrome.storage.local.get('notes', (data) => {
             if (id in data['notes']) {
-                console.log('Nota encontrada (GetById): ',data['notes'][id])
                 resolve(data['notes'][id]);
             } else {
-                console.log('Nota NO encontrada (GetById)')
                 resolve(null);
             }
         });
@@ -51,7 +51,6 @@ export function deleteNote(id) {
                 if (id in notes) {
                     delete notes[id];
                     await chrome.storage.local.set({ 'notes': notes }).then(() => {
-                        console.log('Nota eliminada deleteNote');
                         resolve(true);
                     })
                 } else {
@@ -61,6 +60,30 @@ export function deleteNote(id) {
             } else {
                 console.log('Error deletNote no notes in result');
                 resolve(false);
+            }
+        });
+    });
+}
+
+/*-----------------------------------------------------------------*/
+/* ---------------- PERSISTENCIA DE INFORMACIÓN ------------------ */ 
+/*-----------------------------------------------------------------*/
+
+// GUARDA LA POSICIÓN (VISTA Y PESTAÑA) DEL USUSARIO
+export async function savePosition(info) {
+    await chrome.storage.local.set({ 'info': info });
+}
+
+// RECUPERA LA ULTIMA POSICIÓN (VISTA Y PESTAÑA) EN LA QUE ESTUVO EL USUARIO
+export function getInfo() {
+    return new Promise((resolve) => {
+        chrome.storage.local.get('info', (data) => {
+            if ('info' in data  && data['info'] && Object.keys(data['info']).length > 0) {
+                //console.log('Información encontrada (GetAllInfo): ', data, data['info']);
+                resolve(data['info']);
+            } else {
+                console.log('No hay información (GetAllInfo): ');
+                resolve(null);
             }
         });
     });
