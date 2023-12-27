@@ -1,7 +1,7 @@
 import Note from "./note.js";
 import { setCurrentTab, getCurrentTab, getNotes, setNumNotes, getCurrentView } from "./main.js";
 import { saveNote, getNoteById, getAllNotes } from "./NotesPers.js";
-import { createEventListenerP, createEventListenerTab, createEventListenerCloseB, createEventListenerNewTab, createEventListenerTextA, createEventListenerDel, createEventListenerDiv } from "./listeners.js";
+import { createEventListenerTab, createEventListenerCloseB, createEventListenerNewTab, createEventListenerTextA, createEventListenerDel, createEventListenerDiv, createEventListenerEdit, createEventListenerCheck } from "./listeners.js";
 
 let first_view = document.getElementById('view-one');
 let second_view = document.getElementById("view-two");
@@ -40,7 +40,7 @@ function createTopNote(title, id) {
 
     setCurrentTab(pTitle.id);
 
-    createEventListenerP(pTitle);
+    //createEventListenerP(pTitle);
     createEventListenerTab(tab);
     createEventListenerCloseB(closeB);
     createEventListenerNewTab(newTab);
@@ -78,20 +78,35 @@ function createList(object) {
             let item = document.createElement("li");
             let div = document.createElement("div");
             let h1 = document.createElement("h1");
+            let divB = document.createElement("div");
             let divD = document.createElement("div");
+            let divE = document.createElement("div");
+            let divC = document.createElement("div");
             
             h1.textContent = object[key]._title;
             divD.classList.add('img');
             divD.classList.add('delete');
             divD.id = key;
+            divE.classList.add('img');
+            divE.classList.add('edit');
+            divE.id = key;
+            divC.classList.add('img');
+            divC.classList.add('check');
+            divC.id = key;
+            divC.style.display = 'none';
 
+            divB.appendChild(divC);
+            divB.appendChild(divE);
+            divB.appendChild(divD);
             div.appendChild(h1);
-            div.appendChild(divD);
+            div.appendChild(divB);
             item.appendChild(div);
             ul.appendChild(item);
 
+            createEventListenerCheck(divC)
             createEventListenerDel(divD);
             createEventListenerDiv(div);
+            createEventListenerEdit(divE);
         }
     }
 
@@ -211,7 +226,7 @@ export async function createNewTab() {
 
     setCurrentTab(p.id)
 
-    createEventListenerP(p);
+    //createEventListenerP(p);
     createEventListenerTab(newTab);
     createEventListenerCloseB(closeB);
 
@@ -256,7 +271,7 @@ export async function openTab(object) {
 
                 setCurrentTab(p.id);
 
-                createEventListenerP(p);
+                //createEventListenerP(p);
                 createEventListenerTab(newTab);
                 createEventListenerCloseB(closeB);
             }

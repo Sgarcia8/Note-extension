@@ -51,30 +51,6 @@ export function createEventListenerTab(element) {
     });
 }
 
-// ASIGNA EL EVENT LISTENER A LOS ELEMENTOS P QUE ESTAN DENTRO DE LAS PESTAÑAS (EL TEXTO), FUNCIONA PARA PODER CAMBIAR EL TITULO DE LA NOTA
-export function createEventListenerP(element) {
-    let originalCont;
-
-    element.addEventListener('dblclick', () => {
-        originalCont = element.textContent;
-        element.contentEditable = true;
-    });
-
-    document.addEventListener('click', async (e) => {
-        if (element.contentEditable === "true" && !element.contains(e.target)) {
-            if (originalCont != element.textContent) {
-                let note = await getNoteById(element.id);
-                if (note) {
-                    note._title = element.textContent;
-                    await saveNote(note, getNotes());
-                    await loadSecondView();
-                }
-            } 
-            element.contentEditable = false;
-        }
-    });
-}
-
 // ASIGNA EL EVENT LISTENER AL BOTÓN DE AÑADIR UNA NUEVA PESTAÑA
 export function createEventListenerNewTab(element) {
     element.addEventListener("click", async () => {
@@ -92,8 +68,11 @@ export function createEventListenerNewTab(element) {
 // ASIGNA EL EVENT LISTENER A LOS DIVS QUE CONFORMAN LA LISTA DE NOTA (CADA DIV ES UNA NOTA)
 export function createEventListenerDiv(element) {
     element.addEventListener('click', async (event) =>{
+        let h1 = element.querySelector('h1');
         let divDel = element.querySelector('.delete');
-        if (event.target === divDel) {
+        let divEdit = element.querySelector('.edit');
+        let divCheck = element.querySelector('.check');
+        if (event.target === divDel || event.target === divEdit || event.target === divCheck || h1.contentEditable === "true") {
             return;
         }
 
@@ -128,5 +107,65 @@ export function createEventListenerDel(element) {
         } else {
             console.log("Error al eliminar el elemento");
         }
+    });
+}
+
+// ASIGNA EL EVENT LISTENER A LOS BOTONES DE EDICIÓN DE TITULO, OSEA, PARA PODER CAMBIAR EL TITULO DE LA NOTA (BOTONES)
+export function createEventListenerEdit(element) {
+    let originalCont;
+    let h1 = element.parentNode.parentNode.querySelector('h1');
+    let checkB = element.parentNode.querySelector('.check');
+
+    element.addEventListener('click', async () => {
+        originalCont = h1.textContent;
+
+        console.log(h1, checkB, originalCont);
+
+        h1.contentEditable = true;
+        checkB.style.display = 'inline-block';
+        element.style.display = 'none';
+
+        h1.focus();
+    });
+
+    document.addEventListener('click', async (e) => {
+        //AQUI
+        if (h1.contentEditable === "true" && !element.contains(e.target) && !checkB.contains(e.target) && !h1.contains(e.target)) {
+            console.log(element.contains(e.target));
+            console.log(checkB.contains(e.target));
+            console.log(h1.contains(e.target));
+            if (originalCont != h1.textContent) {
+                let note = await getNoteById(element.id);
+                if (note) {
+                    note._title = h1.textContent;
+                    await saveNote(note, getNotes());
+                    await loadSecondView();
+                }
+            } 
+            h1.contentEditable = false;
+            element.style.display = 'inline-block';
+            checkB.style.display = 'none';
+        }
+    });
+}
+
+// ASIGNA EL EVENT LISTENER A LOS ELEMENTOS DE CONFIRMACIÓN PARA PODER GUARDAR EL TITULO DE UNA NOTA SI SE ESTA CAMBIANDO
+export function createEventListenerCheck(element) {
+    element.addEventListener('click', async () => {
+        let h1 = element.parentNode.parentNode.querySelector('h1');
+        let editB = element.parentNode.querySelector('.edit');
+
+        if (h1.contentEditable === "true") {
+            let note = await getNoteById(element.id);
+            if (note) {
+                note._title = h1.textContent;
+                await saveNote(note, getNotes());
+                await loadSecondView();
+            }
+            h1.contentEditable = false;
+        }
+
+        editB.style.display = 'inline-block';
+        element.style.display = 'none';
     });
 }

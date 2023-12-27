@@ -1,17 +1,22 @@
 import Note from "./note.js";
 import { createNote, assignView, loadSecondView, loadInitView } from "./views.js";
 import { saveNote, getAllNotes, getAll, getInfo, savePosition, deleteAll } from "./NotesPers.js";
+//const chrome = chrome || {};
+//const browserAction = chrome.browserAction || {};
 
+//let extensionContent = document.getElementById('body');
 let first_view = document.getElementById('view-one');
 let second_view = document.getElementById("view-two");
 let createB = document.getElementById("principal-b");
 let comodin = document.getElementById('button-personalize');
 let view1B = document.getElementById("button-create");
 let view2B = document.getElementById("button-organize");
+//let pinButton = document.getElementById("button-pin");
 let currentView = 1;
 let currentTab;
 let notes;
 let numNotes;
+//let pin = false;
 
 /*-----------------------------------------------------------------*/
 /* --------------------- SETTERS & GETTERS ----------------------- */ 
@@ -111,6 +116,35 @@ comodin.addEventListener("click", async () => {
     //const todo = await getAll();
     //console.log('todo: ', info, info.view, info.currentTab, currentTab, currentView);
 })
+
+/*pinButton.addEventListener("click", function() {
+    // Establecer el estado de la ventana emergente como "fija"
+    console.log('PIIIN')
+    if (!pin) {
+        browserAction.setPopupState({
+            pinned: true,
+        });
+        pin = true;    
+    } else {
+        browserAction.setPopupState({
+            pinned: false,
+        });
+        pin = false;
+    }
+  });
+
+// Manejador de clic fuera de la extensión
+document.addEventListener('click', function(event) {
+    let isClickInsideExtension = extensionContent.contains(event.target)
+
+    // Si el clic no está dentro de la extensión, evita cerrarla
+    if (!isClickInsideExtension) {
+        console.log('AFUERA')
+        event.stopPropagation();
+    } else {
+        console.log('ADENTRO')
+    }
+});*/
 
 /*-----------------------------------------------------------------*/
 /* -------------------------- FUNCIONES -------------------------- */ 
