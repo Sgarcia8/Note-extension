@@ -11,7 +11,7 @@ let view2B = document.getElementById("button-organize");
 let currentView = 1;
 let currentTab;
 let notes;
-let listNotes = [];
+//let listNotes = [];
 let numNotes;
 
 /*-----------------------------------------------------------------*/
@@ -42,7 +42,7 @@ export function getNotes() {
     return notes;
 }
 
-async function setListNotes(list) {
+/*async function setListNotes(list) {
     listNotes = list;
 }
 
@@ -52,7 +52,7 @@ export async function addListNotes(item) {
 
 export function getListNotes() {
     return listNotes;
-}
+}*/
 
 export function setNumNotes(num) {
     numNotes = num;
@@ -71,7 +71,7 @@ createB.addEventListener("click", async () => {
     await setNotes();
     let tabs = getExistingTabs();
     try {
-        await setInfo(currentView, currentTab, tabs, getListNotes());   
+        await setInfo(currentView, currentTab, tabs);   
     } catch (error) {
         console.log('Error al setear la información: ', error);
     }
@@ -147,15 +147,15 @@ async function setPosition() {
         if ('currentTab' in info) {
             setCurrentTab(info.currentTab)
         }
-        if ('listNotes' in info) {
+        /*if ('listNotes' in info) {
             setListNotes(info.listNotes)
-        }   
+        }*/
     }
 
     return info;
 }
 
-export async function setInfo(view=1, currentTab=null, existingTabs=null, listNotes=null) {
+export async function setInfo(view=1, currentTab=null, existingTabs=null) {
     const info = {
         view: view
     }
@@ -164,9 +164,9 @@ export async function setInfo(view=1, currentTab=null, existingTabs=null, listNo
         info['existingTabs'] = existingTabs;
         info['currentTab'] = currentTab;
     }
-    if (listNotes) {
+    /*if (listNotes) {
         info['listNotes'] = listNotes;
-    }
+    }*/
     await saveInfo(info);
 }
 

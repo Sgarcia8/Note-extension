@@ -1,4 +1,4 @@
-import { getCurrentTab, getCurrentView, getExistingTabs, getNotes, setCurrentTab, setNotes, setInfo, setCurrentView, getListNotes } from "./main.js";
+import { getCurrentTab, getCurrentView, getExistingTabs, getNotes, setCurrentTab, setNotes, setInfo, setCurrentView } from "./main.js";
 import { loadFirstview, updateFirstView, loadSecondView, saveContNote, setNote, createNewTab, openTab } from "./views.js";
 import { getNoteById, saveNote, deleteNote } from "./NotesPers.js";
 
@@ -58,7 +58,7 @@ export function createEventListenerNewTab(element) {
         setCurrentView(1);
         const tabs = getExistingTabs();
         try {
-            await setInfo(getCurrentView(), getCurrentTab(), tabs, getListNotes());
+            await setInfo(getCurrentView(), getCurrentTab(), tabs);
         } catch (error) {
             console.log('Error al setear la información: ', error);
         }
@@ -89,7 +89,7 @@ export function createEventListenerDiv(element) {
         setCurrentView(1);
         const tabs = getExistingTabs();
         try {
-            await setInfo(getCurrentView(), getCurrentTab(), tabs, getListNotes());   
+            await setInfo(getCurrentView(), getCurrentTab(), tabs);   
         } catch (error) {
             console.log('Error al setear la información: ', error);
         }

@@ -1,5 +1,5 @@
 import Note from "./note.js";
-import { setCurrentTab, getCurrentTab, getNotes, setNumNotes, getCurrentView, addListNotes, getListNotes } from "./main.js";
+import { setCurrentTab, getCurrentTab, getNotes, setNumNotes, getCurrentView } from "./main.js";
 import { saveNote, getNoteById, getAllNotes } from "./NotesPers.js";
 import { createEventListenerTab, createEventListenerCloseB, createEventListenerNewTab, createEventListenerTextA, createEventListenerDel, createEventListenerDiv, createEventListenerEdit, createEventListenerCheck, createEventeListenerDDButon } from "./listeners.js";
 
@@ -132,6 +132,27 @@ function tabExists(key, tabs) {
     return exists;
 }
 
+//VERIFICA SI UNA NOTA EXISTE EN LA LISTA DESPLEGABLE DE NOTAS
+function tabExistDDList(id) {
+    let vaar = document.querySelector('.dropList'); 
+    if (vaar != null) {
+        const list = document.querySelector('.dropList').querySelectorAll('ul li');
+        console.log(list);
+        for (const item of list) {
+            if (id == item.querySelector('p').id) {
+                //REMUEVA EL ITEM EN LA LISTA DESPLEGABLE
+                //SETEAR EL DISPLAY A VISIBLE
+                console.log('Entró')
+            }
+        }
+    }
+}
+
+//ELIMINA LA NOTA DE LA LISTA DESPLEGABLE
+function removeNoteDDList(id) {
+
+}
+
 //VERIFICA QUE EL ANCHO DE LA BARRA DE PESTAÑAS NO SUPERE LO MAXIMO PERMITIDO 
 function verifyExistingTabs(tabs) {
     const button = document.querySelector('.open-list');
@@ -199,8 +220,7 @@ function addNoteDropdownList (tab) {
     let bottom = parseInt(computedStyle.bottom)
     container.style.bottom = (bottom - 27) + 'px';
 
-    addListNotes(tab.querySelector('p').id)
-    tab.remove();
+    tab.style.display = 'none';
 }
 
 //CREA EL BOTÓN Y LA LISTA DESPLEGABLE EN LA BARRA DE NAVEGACIÓN DE LAS NOTAS, ESTO PASA CUANDO SE SUPERA EL NÚMERO DE NOTAS VISIBLES PERMITIDAS
@@ -218,38 +238,6 @@ function createDropdownList(tab) {
     if (noteTop.contains(tab)) {
         addNoteDropdownList(tab)
     }
-} 
-
-//CARGA TODA LA LISTA DE NOTAS INICIALES A PARTIR DE UN ARRAY CON LOS IDS DE LAS NOTAS QUE DEBEN IR EN LA ISLA
-async function loadDropdownList(notes) {
-    let noteTop = document.querySelector('.note-top');
-    createButtonDropdownList(noteTop);
-    createContDropdownList(noteTop);
-    const container = document.querySelector('.dropList');
-    const list = document.querySelector('.dropList').querySelector('ul');
-
-    for (const noteId of notes) {
-        let note = await getNoteById(noteId);
-        if (note) {
-            let item = document.createElement("li");
-            let div = document.createElement("div");
-            let p = document.createElement("p");
-
-            p.textContent = note._title;
-            p.title = note._title;
-            p.id = note._id;
-
-            div.appendChild(p);
-            item.appendChild(div);
-            list.appendChild(item);
-
-            const computedStyle = getComputedStyle(container);
-            let bottom = parseInt(computedStyle.bottom)
-            container.style.bottom = (bottom - 27) + 'px';
-        }
-    }
-
-    console.log(getListNotes())
 }
 
 /*-----------------------------------------------------------------*/
@@ -382,6 +370,9 @@ export async function openTab(object) {
             if (tabExists(object._id, existingTabs)) {
                 //HAY QUE MODIFICAR AQUI EN UN FUTURO
                 setCurrentTab(object._id);
+            } else if (tabExistDDList(object._id)) {
+                //AQUÍ VA EL CÓDIGO CUANDO SE ABRE UNA NOTA QUE ESTA EN LA LISTA DESPLEGABLE
+                console.log('tabExistDDList')
             } else {
                 let firstTab = existingTabs[0];
                 let newTab = document.createElement('div');
@@ -479,13 +470,6 @@ export async function loadInitView(info) {
 
             setCurrentTab(currentTab);
             await setNote();
-
-            const listNotes = getListNotes();
-            console.log(listNotes);
-            if (listNotes.length > 0) {
-                await loadDropdownList(listNotes);
-            }
-
         } else {
             // que se abra en la vista de create new note
             return;
