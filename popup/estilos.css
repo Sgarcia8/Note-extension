@@ -153,6 +153,9 @@ div.img.check {
 
 .content-2-notes ul h1 {
     margin: 3px;
+    max-width: 105px;
+    max-height: 32px;
+    overflow: hidden;
 }
 
 .note-top {
@@ -200,7 +203,6 @@ div.img.check {
 
 .tab {
     background-color: #ecb755;
-    width: 27%;
     height: 70%;
     cursor: pointer;
     border-radius: 5px 14px 0 0;
@@ -238,6 +240,29 @@ div.img.check {
     font-weight: bold;
 }
 
+.open-list {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 1s;
+}
+
+.open-list:hover {
+    background-color: #ecb755;
+}
+
+.open-list p {
+    font-size: large;
+    margin: 0 0 11px 0;
+    width: 12px;
+    height: 26px;
+    font-weight: bold;
+}
+
 #save-button {
     position: absolute;
     bottom: 0;
@@ -251,10 +276,11 @@ div.img.check {
 }
 
 .tab p {
-    margin: 0;
+    margin: 0 5px;
     font-weight: bold;
-    width: 55%;
-    margin-left: 5px;
+    max-width: 50px;
+    max-height: 16px;
+    overflow: hidden;
 }
 
 .close-button {
@@ -279,4 +305,41 @@ div.img.check {
     font-weight: normal;
     width: auto;
     height: 18px;
+}
+
+.dropList {
+    max-width: 85px;
+    max-height: 120px;
+    width: 85px;
+    background-color: #ecb755;
+    position: absolute;
+    bottom: 261px;
+    left: 167px;
+    overflow-y: scroll;
+}
+
+.dropList ul {
+    padding: 0;
+    margin: 0;
+}
+
+.dropList ul p {
+    margin: 0;
+}
+
+.dropList ul li {
+    list-style: none;
+    margin: 3px 0;
+    border: black solid 1px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.dropList ul li:hover {
+    background-color: khaki;
+    transition: background-color 1s;
+}
+
+.dropList ul div {
+    margin: 3px;
 }

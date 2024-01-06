@@ -1,13 +1,13 @@
 import Note from "./note.js";
-import { setCurrentTab, getCurrentTab, getNotes, setNumNotes, getCurrentView } from "./main.js";
+import { setCurrentTab, getCurrentTab, getNotes, setNumNotes, getCurrentView, addListNotes, getListNotes } from "./main.js";
 import { saveNote, getNoteById, getAllNotes } from "./NotesPers.js";
-import { createEventListenerTab, createEventListenerCloseB, createEventListenerNewTab, createEventListenerTextA, createEventListenerDel, createEventListenerDiv, createEventListenerEdit, createEventListenerCheck } from "./listeners.js";
+import { createEventListenerTab, createEventListenerCloseB, createEventListenerNewTab, createEventListenerTextA, createEventListenerDel, createEventListenerDiv, createEventListenerEdit, createEventListenerCheck, createEventeListenerDDButon } from "./listeners.js";
 
 let first_view = document.getElementById('view-one');
 let second_view = document.getElementById("view-two");
 
 /*-----------------------------------------------------------------*/
-/* FUNCIONES LOCALES */ 
+/* FUNCIONES LOCALES */
 /*-----------------------------------------------------------------*/
 
 // CREA EL NAVBAR DE LA SECCIÓN DE NOTAS
@@ -29,18 +29,17 @@ function createTopNote(title, id) {
     p.textContent = "+";
     closeB.classList.add('close-button');
     pClose.textContent = "x";
-    
+
     closeB.appendChild(pClose);
     tab.appendChild(pTitle);
     tab.appendChild(closeB);
     newTab.appendChild(p);
     divTop.appendChild(tab);
     divTop.appendChild(newTab);
-    first_view.appendChild(divTop);    
+    first_view.appendChild(divTop);
 
     setCurrentTab(pTitle.id);
 
-    //createEventListenerP(pTitle);
     createEventListenerTab(tab);
     createEventListenerCloseB(closeB);
     createEventListenerNewTab(newTab);
@@ -55,7 +54,7 @@ function creatContNote(cont) {
     textarea.id = 'note-textarea';
     textarea.value = cont;
 
-    
+
     divC.appendChild(textarea);
     first_view.appendChild(divC);
 
@@ -73,6 +72,10 @@ function clearSecondView() {
 function createList(object) {
     let ul = document.createElement("ul");
 
+    second_view.classList.remove('content-2');
+    second_view.classList.add('content-2-notes');
+    second_view.appendChild(ul);
+
     for (let key in object) {
         if (object.hasOwnProperty(key)) {
             let item = document.createElement("li");
@@ -82,8 +85,9 @@ function createList(object) {
             let divD = document.createElement("div");
             let divE = document.createElement("div");
             let divC = document.createElement("div");
-            
+
             h1.textContent = object[key]._title;
+            h1.title = object[key]._title;
             divD.classList.add('img');
             divD.classList.add('delete');
             divD.id = key;
@@ -109,16 +113,12 @@ function createList(object) {
             createEventListenerEdit(divE);
         }
     }
-
-    second_view.classList.remove('content-2');
-    second_view.classList.add('content-2-notes');
-    second_view.appendChild(ul);
 }
 
 // VERIFICA SI HAY PESTAÑAS EXISTENTES EN LA VISTA
 function tabExists(key, tabs) {
     let exists = false;
-    Array.from(tabs).some(function(tab) {
+    Array.from(tabs).some(function (tab) {
         let id = tab.querySelector('p').id;
 
         if (id === key) {
@@ -132,8 +132,128 @@ function tabExists(key, tabs) {
     return exists;
 }
 
+//VERIFICA QUE EL ANCHO DE LA BARRA DE PESTAÑAS NO SUPERE LO MAXIMO PERMITIDO 
+function verifyExistingTabs(tabs) {
+    const button = document.querySelector('.open-list');
+    let width = 0;
+
+    for (const tab of tabs) {
+        width = width + tab.offsetWidth;
+        if (!button || (button && button.style.display == 'none')) {
+            if (width > 156) {
+                return tab;
+            }
+        } else if (button && button.style.display != 'none') {
+            if (width > 131) {
+                return tab;
+            }
+        }
+    }
+
+    return null;
+}
+
+//CREA EL BOTÓN PARA VER LA LISTA DE NOTAS QUE NO SON VISIBLES
+function createButtonDropdownList(parent) {
+    let openList = document.createElement('div');
+    let p = document.createElement('p');
+
+    openList.classList.add('open-list');
+    openList.id = 'open-list';
+    p.textContent = "⌄";
+
+    openList.appendChild(p);
+    parent.appendChild(openList);
+
+    createEventeListenerDDButon(openList);
+}
+
+//CREA EL DIV DE LA LISTA DESPLEGABLE DONDE SE MOSTRARA TODO EL CONTENIDO, OSEA, LAS NOTAS QUE NO SON VISIBLES PERO SE ABRIERON
+function createContDropdownList(parent) {
+    let list = document.createElement('div');
+    let ul = document.createElement("ul");
+
+    list.classList.add('dropList');
+
+    list.appendChild(ul);
+    parent.parentNode.appendChild(list);
+}
+
+//AÑADE A LA LISTA DESPLEGABLE DE LAS NOTAS QUE NO ESTAN VISIBLES UNA NUEVA NOTA
+function addNoteDropdownList (tab) {
+    const container = document.querySelector('.dropList');
+    const list = document.querySelector('.dropList').querySelector('ul');
+    let item = document.createElement("li");
+    let div = document.createElement("div");
+    let p = document.createElement("p");
+
+    p.textContent = tab.querySelector('p').textContent;
+    p.title = tab.querySelector('p').textContent;
+    p.id = tab.querySelector('p').id;
+
+    div.appendChild(p);
+    item.appendChild(div);
+    list.appendChild(item);
+
+    const computedStyle = getComputedStyle(container);
+    let bottom = parseInt(computedStyle.bottom)
+    container.style.bottom = (bottom - 27) + 'px';
+
+    addListNotes(tab.querySelector('p').id)
+    tab.remove();
+}
+
+//CREA EL BOTÓN Y LA LISTA DESPLEGABLE EN LA BARRA DE NAVEGACIÓN DE LAS NOTAS, ESTO PASA CUANDO SE SUPERA EL NÚMERO DE NOTAS VISIBLES PERMITIDAS
+function createDropdownList(tab) {
+    let noteTop = document.querySelector('.note-top');
+
+    if (noteTop.querySelector('#open-list')) {
+        addNoteDropdownList(tab);
+        return;
+    }
+
+    createButtonDropdownList(noteTop);
+    createContDropdownList(noteTop);
+
+    if (noteTop.contains(tab)) {
+        addNoteDropdownList(tab)
+    }
+} 
+
+//CARGA TODA LA LISTA DE NOTAS INICIALES A PARTIR DE UN ARRAY CON LOS IDS DE LAS NOTAS QUE DEBEN IR EN LA ISLA
+async function loadDropdownList(notes) {
+    let noteTop = document.querySelector('.note-top');
+    createButtonDropdownList(noteTop);
+    createContDropdownList(noteTop);
+    const container = document.querySelector('.dropList');
+    const list = document.querySelector('.dropList').querySelector('ul');
+
+    for (const noteId of notes) {
+        let note = await getNoteById(noteId);
+        if (note) {
+            let item = document.createElement("li");
+            let div = document.createElement("div");
+            let p = document.createElement("p");
+
+            p.textContent = note._title;
+            p.title = note._title;
+            p.id = note._id;
+
+            div.appendChild(p);
+            item.appendChild(div);
+            list.appendChild(item);
+
+            const computedStyle = getComputedStyle(container);
+            let bottom = parseInt(computedStyle.bottom)
+            container.style.bottom = (bottom - 27) + 'px';
+        }
+    }
+
+    console.log(getListNotes())
+}
+
 /*-----------------------------------------------------------------*/
-/* FUNCIONES EXPORTADAS */ 
+/* FUNCIONES EXPORTADAS */
 /*-----------------------------------------------------------------*/
 
 // CARGA LA VISTA PRINCIPAL DE LA FORMA ORIGINAL
@@ -204,7 +324,7 @@ export async function setNote() {
 // AÑADE UNA NUEVA PESTAÑA AL NAVBAR DE LAS NOTAS
 export async function createNewTab() {
     let existingTabs = document.getElementsByClassName("tab");
-    let lastTab = existingTabs[existingTabs.length - 1];
+    let firstTab = existingTabs[0];
     let note = new Note();
 
     let newTab = document.createElement('div');
@@ -215,6 +335,7 @@ export async function createNewTab() {
     newTab.classList.add('tab');
     p.textContent = note.title;
     p.id = note.id;
+    p.title = note.title;
     closeB.classList.add('close-button');
     pClose.textContent = "x";
     await saveNote(note, getNotes());
@@ -222,7 +343,7 @@ export async function createNewTab() {
     closeB.appendChild(pClose);
     newTab.appendChild(p);
     newTab.appendChild(closeB);
-    lastTab.parentNode.insertBefore(newTab, lastTab.nextSibling);
+    firstTab.parentNode.insertBefore(newTab, existingTabs[0]);
 
     setCurrentTab(p.id)
 
@@ -231,11 +352,20 @@ export async function createNewTab() {
     createEventListenerCloseB(closeB);
 
     await setNote();
+
+    let result = verifyExistingTabs(existingTabs);
+    if (result) {
+        createDropdownList(result);
+    }
 }
 
 // FUNCIÓN PARA ABRIR UNA PESTAÑA Y EL CONTENIDO QUE DEBE IR AHÍ
 export async function openTab(object) {
-    
+
+    if (getComputedStyle(first_view).getPropertyValue("display") == 'none') {
+        assignView(first_view);
+    }
+
     if (object) {
         let existingTabs = document.getElementsByClassName("tab");
 
@@ -249,10 +379,11 @@ export async function openTab(object) {
             let button = document.getElementById("principal-b");
             button.style.display = 'none';
         } else {
-            if (tabExists(object._id, existingTabs)){
+            if (tabExists(object._id, existingTabs)) {
+                //HAY QUE MODIFICAR AQUI EN UN FUTURO
                 setCurrentTab(object._id);
             } else {
-                let lastTab = existingTabs[existingTabs.length - 1];
+                let firstTab = existingTabs[0];
                 let newTab = document.createElement('div');
                 let p = document.createElement('p');
                 let closeB = document.createElement('div');
@@ -261,26 +392,28 @@ export async function openTab(object) {
                 newTab.classList.add('tab');
                 p.textContent = object._title;
                 p.id = object._id;
+                p.title = object._title;
                 closeB.classList.add('close-button');
                 pClose.textContent = "x";
 
                 closeB.appendChild(pClose);
                 newTab.appendChild(p);
                 newTab.appendChild(closeB);
-                lastTab.parentNode.insertBefore(newTab, lastTab.nextSibling);
+                firstTab.parentNode.insertBefore(newTab, existingTabs[0]);
 
                 setCurrentTab(p.id);
 
                 //createEventListenerP(p);
                 createEventListenerTab(newTab);
                 createEventListenerCloseB(closeB);
+
+                let result = verifyExistingTabs(existingTabs);
+                if (result) {
+                    createDropdownList(result);
+                }
             }
         }
         await setNote();
-    }
-
-    if (getComputedStyle(first_view).getPropertyValue("display") == 'none') {
-        assignView(first_view);
     }
 }
 
@@ -290,9 +423,9 @@ export async function updateFirstView() {
     let tabs = Array.from(divs);
 
     // Creamos un array para almacenar todas las promesas
-    const promises = tabs.map(async function(tab){
+    const promises = tabs.map(async function (tab) {
         let id = tab.querySelector('.tab p').id;
-        
+
         try {
             let note = await getNoteById(id);
             if (!note) {
@@ -313,7 +446,7 @@ export function createNote(title, id, cont) {
     first_view.classList.remove('content-1');
     first_view.classList.add('content-1-grid');
     first_view.style.display = 'grid';
-    
+
     createTopNote(title, id);
     creatContNote(cont);
 }
@@ -329,6 +462,7 @@ export function assignView(view) {
     }
 }
 
+//CARGA LA VISTA INICIAL DEL PROGRAMA TAL CUAL COMO EL USUARIO LO DEJO AL CERRARLO POR ULTIMA VEZ
 export async function loadInitView(info) {
     const view = getCurrentView();
     const currentTab = getCurrentTab();
@@ -345,6 +479,13 @@ export async function loadInitView(info) {
 
             setCurrentTab(currentTab);
             await setNote();
+
+            const listNotes = getListNotes();
+            console.log(listNotes);
+            if (listNotes.length > 0) {
+                await loadDropdownList(listNotes);
+            }
+
         } else {
             // que se abra en la vista de create new note
             return;

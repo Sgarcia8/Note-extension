@@ -70,7 +70,7 @@ export function deleteNote(id) {
 /*-----------------------------------------------------------------*/
 
 // GUARDA LA POSICIÓN (VISTA Y PESTAÑA) DEL USUSARIO
-export async function savePosition(info) {
+export async function saveInfo(info) {
     await chrome.storage.local.set({ 'info': info });
 }
 
@@ -79,7 +79,6 @@ export function getInfo() {
     return new Promise((resolve) => {
         chrome.storage.local.get('info', (data) => {
             if ('info' in data  && data['info'] && Object.keys(data['info']).length > 0) {
-                //console.log('Información encontrada (GetAllInfo): ', data, data['info']);
                 resolve(data['info']);
             } else {
                 console.log('No hay información (GetAllInfo): ');
