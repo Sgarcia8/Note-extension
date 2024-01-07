@@ -1,5 +1,5 @@
 import { getCurrentTab, getCurrentView, getExistingTabs, getNotes, setCurrentTab, setNotes, setInfo, setCurrentView } from "./main.js";
-import { loadFirstview, updateFirstView, loadSecondView, saveContNote, setNote, createNewTab, openTab } from "./views.js";
+import { loadFirstview, updateFirstView, loadSecondView, saveContNote, setNote, createNewTab, openTab, removeNoteDDList, reOpenTab } from "./views.js";
 import { getNoteById, saveNote, deleteNote } from "./NotesPers.js";
 
 // ASIGNA EL EVENT LISTENER A LOS DE CIERRE DE PESTAÑAS
@@ -181,5 +181,21 @@ export function createEventeListenerDDButon(element) {
             dropList.style.display = 'none';
         }
         
+    });
+}
+
+export function createEventeListenerDDListItem(element) {
+    element.addEventListener('click', async () => {
+        console.log(element, element.querySelector('p').id);
+        removeNoteDDList(element.querySelector('p').id);
+        await reOpenTab(element.querySelector('p').id);
+
+        setCurrentView(1);
+        const tabs = getExistingTabs();
+        try {
+            await setInfo(getCurrentView(), getCurrentTab(), tabs);   
+        } catch (error) {
+            console.log('Error al setear la información: ', error);
+        }
     });
 }

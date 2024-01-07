@@ -1,7 +1,7 @@
 import Note from "./note.js";
 import { setCurrentTab, getCurrentTab, getNotes, setNumNotes, getCurrentView } from "./main.js";
 import { saveNote, getNoteById, getAllNotes } from "./NotesPers.js";
-import { createEventListenerTab, createEventListenerCloseB, createEventListenerNewTab, createEventListenerTextA, createEventListenerDel, createEventListenerDiv, createEventListenerEdit, createEventListenerCheck, createEventeListenerDDButon } from "./listeners.js";
+import { createEventListenerTab, createEventListenerCloseB, createEventListenerNewTab, createEventListenerTextA, createEventListenerDel, createEventListenerDiv, createEventListenerEdit, createEventListenerCheck, createEventeListenerDDButon, createEventeListenerDDListItem } from "./listeners.js";
 
 let first_view = document.getElementById('view-one');
 let second_view = document.getElementById("view-two");
@@ -153,36 +153,6 @@ function tabExists(key, tabs, element) {
     return exists;
 }
 
-//ELIMINA LA NOTA DE LA LISTA DESPLEGABLE
-function removeNoteDDList(id) {
-    const container = document.querySelector('.dropList');
-    const list = document.querySelector('.dropList').querySelector('ul').querySelectorAll('li');
-    const computedStyle = getComputedStyle(container);
-    let bottom = parseInt(computedStyle.bottom)
-
-    for (const item of list) {
-        if (id === item.querySelector('p').id) {
-            container.querySelector('ul').removeChild(item);
-            container.style.bottom = (bottom + 27) + 'px';
-        }
-    }
-}
-
-//RE ABRE Y ACOMODA UNA NOTA QUE ESTABA EN LA LISTA DESPLEGABLE Y QUE EL USUSARIO SELECCIONÓ
-async function reOpenTab(id) {
-    const tabs = document.querySelector('.note-top').querySelectorAll('.tab');
-
-    for (const tab of tabs) {
-        if (id === tab.querySelector('p').id) {
-            tab.remove();
-            let note = await getNoteById(id);
-            if (note) {
-                await openTab(note);
-            }
-        }
-    }
-}
-
 //VERIFICA QUE EL ANCHO DE LA BARRA DE PESTAÑAS NO SUPERE LO MAXIMO PERMITIDO 
 function verifyExistingTabs(tabs) {
     const button = document.querySelector('.open-list');
@@ -245,6 +215,8 @@ function addNoteDropdownList (tab) {
     div.appendChild(p);
     item.appendChild(div);
     list.appendChild(item);
+
+    createEventeListenerDDListItem(item);
 
     const computedStyle = getComputedStyle(container);
     let bottom = parseInt(computedStyle.bottom)
@@ -480,6 +452,36 @@ export function assignView(view) {
     } else if (view.classList.value === "content-1-grid") {
         first_view.style.display = 'grid';
         second_view.style.display = 'none';
+    }
+}
+
+//ELIMINA LA NOTA DE LA LISTA DESPLEGABLE
+export function removeNoteDDList(id) {
+    const container = document.querySelector('.dropList');
+    const list = document.querySelector('.dropList').querySelector('ul').querySelectorAll('li');
+    const computedStyle = getComputedStyle(container);
+    let bottom = parseInt(computedStyle.bottom)
+
+    for (const item of list) {
+        if (id === item.querySelector('p').id) {
+            container.querySelector('ul').removeChild(item);
+            container.style.bottom = (bottom + 27) + 'px';
+        }
+    }
+}
+
+//RE ABRE Y ACOMODA UNA NOTA QUE ESTABA EN LA LISTA DESPLEGABLE Y QUE EL USUSARIO SELECCIONÓ
+export async function reOpenTab(id) {
+    const tabs = document.querySelector('.note-top').querySelectorAll('.tab');
+
+    for (const tab of tabs) {
+        if (id === tab.querySelector('p').id) {
+            tab.remove();
+            let note = await getNoteById(id);
+            if (note) {
+                await openTab(note);
+            }
+        }
     }
 }
 
