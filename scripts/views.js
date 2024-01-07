@@ -116,41 +116,71 @@ function createList(object) {
 }
 
 // VERIFICA SI HAY PESTAÑAS EXISTENTES EN LA VISTA
-function tabExists(key, tabs) {
+function tabExists(key, tabs, element) {
     let exists = false;
-    Array.from(tabs).some(function (tab) {
-        let id = tab.querySelector('p').id;
 
-        if (id === key) {
-            exists = true;
-            return true;
-        } else {
-            exists = false;
-            return false;
-        }
-    });
-    return exists;
-}
-
-//VERIFICA SI UNA NOTA EXISTE EN LA LISTA DESPLEGABLE DE NOTAS
-function tabExistDDList(id) {
-    let vaar = document.querySelector('.dropList'); 
-    if (vaar != null) {
-        const list = document.querySelector('.dropList').querySelectorAll('ul li');
-        console.log(list);
-        for (const item of list) {
-            if (id == item.querySelector('p').id) {
-                //REMUEVA EL ITEM EN LA LISTA DESPLEGABLE
-                //SETEAR EL DISPLAY A VISIBLE
-                console.log('Entró')
+    if (element === 'navbar') {
+        Array.from(tabs).some(function (tab) {
+            if (tab.style.display === 'none') {
+                return false;
             }
-        }
+            let id = tab.querySelector('p').id;
+    
+            if (id === key) {
+                exists = true;
+                return true;
+            } else {
+                exists = false;
+                return false;
+            }
+        });
+    } else {
+        Array.from(tabs).some(function (tab) {
+            if (tab.style.display != 'none') {
+                return false;
+            }
+            let id = tab.querySelector('p').id;
+    
+            if (id === key) {
+                exists = true;
+                return true;
+            } else {
+                exists = false;
+                return false;
+            }
+        });
     }
+    return exists;
 }
 
 //ELIMINA LA NOTA DE LA LISTA DESPLEGABLE
 function removeNoteDDList(id) {
+    const container = document.querySelector('.dropList');
+    const list = document.querySelector('.dropList').querySelector('ul').querySelectorAll('li');
+    const computedStyle = getComputedStyle(container);
+    let bottom = parseInt(computedStyle.bottom)
 
+    for (const item of list) {
+        if (id === item.querySelector('p').id) {
+            container.querySelector('ul').removeChild(item);
+            container.style.bottom = (bottom + 27) + 'px';
+        }
+    }
+}
+
+//RE ABRE Y ACOMODA UNA NOTA QUE ESTABA EN LA LISTA DESPLEGABLE Y QUE EL USUSARIO SELECCIONÓ
+async function reOpenTab(id) {
+    const tabs = document.querySelector('.note-top').querySelectorAll('.tab');
+
+    for (const tab of tabs) {
+        if (id === tab.querySelector('p').id) {
+            tab.remove();
+            let note = await getNoteById(id);
+            if (note) {
+                await openTab(note);
+            }
+        }
+    }
 }
 
 //VERIFICA QUE EL ANCHO DE LA BARRA DE PESTAÑAS NO SUPERE LO MAXIMO PERMITIDO 
@@ -367,12 +397,12 @@ export async function openTab(object) {
             let button = document.getElementById("principal-b");
             button.style.display = 'none';
         } else {
-            if (tabExists(object._id, existingTabs)) {
+            if (tabExists(object._id, existingTabs, 'navbar')) {
                 //HAY QUE MODIFICAR AQUI EN UN FUTURO
                 setCurrentTab(object._id);
-            } else if (tabExistDDList(object._id)) {
-                //AQUÍ VA EL CÓDIGO CUANDO SE ABRE UNA NOTA QUE ESTA EN LA LISTA DESPLEGABLE
-                console.log('tabExistDDList')
+            } else if (tabExists(object._id, existingTabs, 'droplist')) {
+                removeNoteDDList(object._id);
+                await reOpenTab(object._id);
             } else {
                 let firstTab = existingTabs[0];
                 let newTab = document.createElement('div');
@@ -461,7 +491,8 @@ export async function loadInitView(info) {
         if ('existingTabs' in info) {
             // que se abra la primerea vista con las tabs existentes
             const tabs = info.existingTabs
-            for (const tab of tabs) {
+
+            for (const tab of [...tabs].reverse()) {
                 let note = await getNoteById(tab);
                 if (note) {
                     await openTab(note);
