@@ -1,5 +1,5 @@
 import { getCurrentTab, getCurrentView, getExistingTabs, getNotes, setCurrentTab, setNotes, setInfo, setCurrentView } from "./main.js";
-import { loadFirstview, updateFirstView, loadSecondView, saveContNote, setNote, createNewTab, openTab, removeNoteDDList, reOpenTab } from "./views.js";
+import { loadFirstview, updateFirstView, loadSecondView, saveContNote, setNote, createNewTab, openTab, removeNoteDDList, reOpenTab, openExistingTab } from "./views.js";
 import { getNoteById, saveNote, deleteNote } from "./NotesPers.js";
 
 // ASIGNA EL EVENT LISTENER A LOS DE CIERRE DE PESTAÑAS
@@ -14,9 +14,13 @@ export function createEventListenerCloseB(element) {
             loadFirstview();
             setCurrentTab(null);
         } else {
-            let lastTab = existingTabs[existingTabs.length - 1];
-            setCurrentTab(lastTab.querySelector('p').id);
+            let firstTab = existingTabs[0];
+            setCurrentTab(firstTab.querySelector('p').id);
             await setNote();
+            const opened = openExistingTab();
+            if (opened != null) {
+                removeNoteDDList(opened);
+            }
         }
         const tabs = getExistingTabs();
         try {

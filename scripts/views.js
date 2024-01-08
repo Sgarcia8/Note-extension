@@ -161,11 +161,11 @@ function verifyExistingTabs(tabs) {
     for (const tab of tabs) {
         width = width + tab.offsetWidth;
         if (!button || (button && button.style.display == 'none')) {
-            if (width > 156) {
+            if (width > 175) {
                 return tab;
             }
         } else if (button && button.style.display != 'none') {
-            if (width > 131) {
+            if (width > 150) {
                 return tab;
             }
         }
@@ -468,6 +468,11 @@ export function removeNoteDDList(id) {
             container.style.bottom = (bottom + 27) + 'px';
         }
     }
+    console.log(list, document.querySelector('.dropList').querySelector('ul').querySelectorAll('li'), container.querySelector('ul'))
+    if (document.querySelector('.dropList').querySelector('ul').querySelectorAll('li').length === 0) {
+        document.querySelector('.note-top').querySelector('#open-list').remove();
+        document.querySelector('.dropList').remove();
+    }
 }
 
 //RE ABRE Y ACOMODA UNA NOTA QUE ESTABA EN LA LISTA DESPLEGABLE Y QUE EL USUSARIO SELECCIONÓ
@@ -483,6 +488,29 @@ export async function reOpenTab(id) {
             }
         }
     }
+}
+
+//ABRE UNA NOTA DE LAS POSIBLES NOTAS QUE EXISTEN EN LA LISTA DESPLEGABLE DE NOTAS
+export function openExistingTab() {
+    //DEBO EVALUAR SI UNA NOTA CON TITULO LARGO ESTÁ
+    const tabs = document.querySelector('.note-top').querySelectorAll('.tab');
+    let isOpen = null;
+
+    for (const tab of tabs) {
+        if (tab.style.display === 'none') {
+            tab.style.display = 'flex';
+            let result = verifyExistingTabs(tabs);
+                if (result) {
+                    tab.style.display = 'none';
+                    continue;
+                } else {
+                    isOpen = tab.querySelector('p').id;
+                    break;
+                }
+        }
+    }
+
+    return isOpen;
 }
 
 //CARGA LA VISTA INICIAL DEL PROGRAMA TAL CUAL COMO EL USUARIO LO DEJO AL CERRARLO POR ULTIMA VEZ
