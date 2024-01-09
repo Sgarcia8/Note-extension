@@ -220,7 +220,14 @@ function addNoteDropdownList (tab) {
 
     const computedStyle = getComputedStyle(container);
     let bottom = parseInt(computedStyle.bottom)
-    container.style.bottom = (bottom - 27) + 'px';
+
+    if (parseInt(computedStyle.height) < 120) {
+        container.style.bottom = (bottom - 27) + 'px';
+    } else {
+        if (bottom != 144) {
+            container.style.bottom = (bottom - 9) + 'px';
+        }
+    }
 
     tab.style.display = 'none';
 }
@@ -464,11 +471,18 @@ export function removeNoteDDList(id) {
 
     for (const item of list) {
         if (id === item.querySelector('p').id) {
-            container.querySelector('ul').removeChild(item);
-            container.style.bottom = (bottom + 27) + 'px';
+            if (parseInt(computedStyle.height) < 120) {
+                container.querySelector('ul').removeChild(item);
+                container.style.bottom = (bottom + 27) + 'px';
+            } else {
+                container.querySelector('ul').removeChild(item);
+                if (bottom != 144 || parseInt(computedStyle.height) != 120) {
+                    container.style.bottom = (bottom + 9) + 'px';
+                }
+            }
         }
     }
-    console.log(list, document.querySelector('.dropList').querySelector('ul').querySelectorAll('li'), container.querySelector('ul'))
+
     if (document.querySelector('.dropList').querySelector('ul').querySelectorAll('li').length === 0) {
         document.querySelector('.note-top').querySelector('#open-list').remove();
         document.querySelector('.dropList').remove();
