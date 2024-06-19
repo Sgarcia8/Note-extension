@@ -1,5 +1,5 @@
 import Note from "./note.js";
-import { setCurrentTab, getCurrentTab, getNotes, setNumNotes, getCurrentView } from "./main.js";
+import { setCurrentView, setCurrentTab, getCurrentTab, getNotes, setNumNotes, getCurrentView } from "./main.js";
 import { saveNote, getNoteById, getAllNotes } from "./NotesPers.js";
 import { createEventListenerTab, createEventListenerCloseB, createEventListenerNewTab, createEventListenerTextA, createEventListenerDel, createEventListenerDiv, createEventListenerEdit, createEventListenerCheck, createEventeListenerDDButon, createEventeListenerDDListItem } from "./listeners.js";
 
@@ -529,9 +529,9 @@ export function openExistingTab() {
 
 //CARGA LA VISTA INICIAL DEL PROGRAMA TAL CUAL COMO EL USUARIO LO DEJO AL CERRARLO POR ULTIMA VEZ
 export async function loadInitView(info) {
-    const view = getCurrentView();
     const currentTab = getCurrentTab();
-    if (view === 1 && info) {
+    const notes = await getAllNotes();
+    if (info && (info.existingTabs !== undefined || notes === null)) {
         if ('existingTabs' in info) {
             // que se abra la primerea vista con las tabs existentes
             const tabs = info.existingTabs
@@ -549,11 +549,12 @@ export async function loadInitView(info) {
             // que se abra en la vista de create new note
             return;
         }
-    } else if (view === 2) {
+    } else{
         // que se abra en la segunda vista de lista de notas
         if (getComputedStyle(second_view).getPropertyValue("display") == 'none') {
             second_view.style.display = 'flex';
             first_view.style.display = 'none';
+            setCurrentView(2);
         }
     }
 }
